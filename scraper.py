@@ -108,9 +108,11 @@ def main(location):
             data.append([title, description_content, url])
         else:
             print(f"Failed to retrieve the webpage at {url}. Status code: {response.status_code}")
-
+            print(response.text)
+            break
+            
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
-    df.to_csv('antry.new.csv', index=False, encoding='utf-8')
+    df.to_csv('EUauto.csv', index=False, encoding='utf-8')
     print("CSV 文件已成功生成。")
 
 if __name__ == "__main__":
