@@ -91,11 +91,11 @@ def main(location):
 
     all_filtered_urls = list(set(all_filtered_urls))
 
-    # 给所有爬出的 URL，每一个爬出 title, content -> 汇出成 CSV 文件
+    # 给所有爬出的 URL，每一个爬出 title, content -> 匯出成 CSV 文件
     data = []
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
     for url in chain(all_filtered_urls, non_collection_urls):
@@ -110,7 +110,7 @@ def main(location):
             print(f"Failed to retrieve the webpage at {url}. Status code: {response.status_code}")
 
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
-    df.to_csv('country.new.csv', index=False, encoding='utf-8')
+    df.to_csv('antry.new.csv', index=False, encoding='utf-8')
     print("CSV 文件已成功生成。")
 
 if __name__ == "__main__":
