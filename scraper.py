@@ -91,28 +91,35 @@ def main(location):
 
     all_filtered_urls = list(set(all_filtered_urls))
 
-    # 给所有爬出的 URL，每一个爬出 title, content -> 匯出成 CSV 文件
+    # 使用 API 爬取每个 URL 并解析 HTML，提取 title 和 content
     data = []
 
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-
     for url in chain(all_filtered_urls, non_collection_urls):
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
-            title = soup.title.string.split(" | ")[0] if soup.title else "Title not found"
-            description = soup.find('meta', property="og:description")
-            description_content = description.get('content') if description else "Meta description not found"
-            data.append([title, description_content, url])
-        else:
-            print(f"Failed to retrieve the webpage at {url}. Status code: {response.status_code}")
-            print(response.text)
-            break
-            
+        try:
+            api_response = requests.post(
+                "https://api.zyte.com/v1/extract",
+                auth=("1efb03ddb3a749c68d7528ee0880d56a", ""),  # Replace with your actual API credentials
+                json={"url": url, "httpResponseBody": True},
+            )
+            response_json = api_response.json()
+
+            if api_response.status_code == 200 and "httpResponseBody" in response_json:
+                http_response_body = b64decode(response_json["httpResponseBody"])
+                soup = BeautifulSoup(http_response_body.decode('utf-8'), 'html.parser')
+                title_tag = soup.find('meta', property="og:title")
+                description_tag = soup.find('meta', property="og:description")
+                title = title_tag.get('content') if title_tag else "Title not found"
+                description = description_tag.get('content') if description_tag else "Meta description not found"
+                data.append([title, description, url])
+            else:
+                print(f"Failed to fetch data from {url}")
+        except Exception as e:
+            print(f"Error retrieving URL {url}: {e}")
+        # Add a slight delay to avoid being blocked by the server
+        time.sleep(1)
+
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
-    df.to_csv('EUauto.csv', index=False, encoding='utf-8')
+    df.to_csv('country.new.csv', index=False, encoding='utf-8')
     print("CSV 文件已成功生成。")
 
 if __name__ == "__main__":
