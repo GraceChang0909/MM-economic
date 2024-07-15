@@ -95,10 +95,7 @@ def main(location):
     data = []
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9', 
-        'Accept-Encoding': 'gzip, deflate, br', 
-        'Connection': 'keep-alive'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
     for url in chain(all_filtered_urls, non_collection_urls):
@@ -116,7 +113,7 @@ def main(location):
             print(f"Error processing URL {url}: {e}")
 
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
-    df.to_csv('country.new.csv', index=False, encoding='utf-8')
+    df.to_csv('Chitry.new.csv', index=False, encoding='utf-8')
     print("CSV 文件已成功生成。")
 
 if __name__ == "__main__":
