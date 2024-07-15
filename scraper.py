@@ -95,20 +95,25 @@ def main(location):
     data = []
 
     headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Accept-Language': 'en-US,en;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Connection': 'keep-alive'
-    }   
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9', 
+        'Accept-Encoding': 'gzip, deflate, br', 
+        'Connection': 'keep-alive'
+    }
 
     for url in chain(all_filtered_urls, non_collection_urls):
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
-            title = soup.title.string.split(" | ")[0] if soup.title else "Title not found"
-            description = soup.find('meta', property="og:description")
-            description_content = description.get('content') if description else "Meta description not found"
-            data.append([title, description_content, url])
-        else:
-            print(f"Failed to retrieve the webpage at {url}. Status code: {response.status_code}")
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                title = soup.title.string.split(" | ")[0] if soup.title else "Title not found"
+                description = soup.find('meta', property="og:description")
+                description_content = description.get('content') if description else "Meta description not found"
+                data.append([title, description_content, url])
+            else:
+                print(f"Failed to retrieve the webpage at {url}. Status code: {response.status_code}")
+        except Exception as e:
+            print(f"Error processing URL {url}: {e}")
 
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
     df.to_csv('country.new.csv', index=False, encoding='utf-8')
@@ -119,4 +124,3 @@ if __name__ == "__main__":
     parser.add_argument("location", help="要爬取的 URL")
     args = parser.parse_args()
     main(args.location)
-
