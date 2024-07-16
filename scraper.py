@@ -1,5 +1,6 @@
 import re
 import time
+import configparser
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -14,6 +15,11 @@ from itertools import chain
 import argparse
 
 def main(location):
+    # 读取 API 密钥
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    api_key = config['zyte']['api_key']
+
     # 配置和初始化 Selenium WebDriver
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
@@ -54,7 +60,7 @@ def main(location):
         try:
             api_response = requests.post(
                 "https://api.zyte.com/v1/extract",
-                auth=("1efb03ddb3a749c68d7528ee0880d56a", ""),  # Replace with your actual API credentials
+                auth=(api_key, ""),  # 使用从配置文件中读取的 API 密钥
                 json={"url": url, "httpResponseBody": True},
             )
             response_json = api_response.json()
@@ -63,7 +69,7 @@ def main(location):
                 http_response_body = b64decode(response_json["httpResponseBody"])
                 results.append(http_response_body)
             else:
-                print(f"Failed to fetch data from {url}")
+                print(f"Failed to fetch data from {url}: {api_response.status_code} - {api_response.text}")
         except Exception as e:
             print(f"Error processing URL {url}: {e}")
 
@@ -106,7 +112,7 @@ def main(location):
         try:
             api_response = requests.post(
                 "https://api.zyte.com/v1/extract",
-                auth=("1efb03ddb3a749c68d7528ee0880d56a", ""),  # Replace with your actual API credentials
+                auth=(api_key, ""),  # 使用从配置文件中读取的 API 密钥
                 json={"url": url, "httpResponseBody": True},
             )
             response_json = api_response.json()
@@ -121,7 +127,7 @@ def main(location):
                 if title != "Title not found":  # 过滤掉标题为 "Title not found" 的记录
                     data.append([title, description, url])
             else:
-                print(f"Failed to fetch data from {url}")
+                print(f"Failed to fetch data from {url}: {api_response.status_code} - {api_response.text}")
         except Exception as e:
             print(f"Error retrieving URL {url}: {e}")
 
