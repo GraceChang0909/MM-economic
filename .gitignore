@@ -1,5 +1,13 @@
 newenv
 venv04
 new.簡化版模板.py
+<<<<<<< HEAD
+=======
+config.ini
+cn.csv
+eu.auto.csv
+EUauto.csv
+tw.csv
+>>>>>>> c0e3606 (clean ignore documents)
 
 
