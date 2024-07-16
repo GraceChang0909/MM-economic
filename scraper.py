@@ -44,6 +44,9 @@ def main(location):
             unique_collections.add(collection_part)
             filtered_collection_urls.append(url)
 
+    print(f"Filtered collection URLs: {filtered_collection_urls}")
+    print(f"Non-collection URLs: {non_collection_urls}")
+
     # 第二层：爬每个 collections 里面所有含 collections 的 URL
     results = []
 
@@ -63,6 +66,8 @@ def main(location):
                 print(f"Failed to fetch data from {url}")
         except Exception as e:
             print(f"Error processing URL {url}: {e}")
+
+    print(f"Number of results from collections: {len(results)}")
 
     # 提取所有含 collections 的 URL
     all_filtered_urls = []
@@ -91,10 +96,13 @@ def main(location):
 
     all_filtered_urls = list(set(all_filtered_urls))
 
+    print(f"Filtered URLs from collections: {all_filtered_urls}")
+
     # 使用 API 爬取每个 URL 并解析 HTML，提取 title 和 content
     data = []
 
     for url in chain(all_filtered_urls, non_collection_urls):
+        print(f"Processing URL: {url}")
         try:
             api_response = requests.post(
                 "https://api.zyte.com/v1/extract",
@@ -119,8 +127,10 @@ def main(location):
         # Add a slight delay to avoid being blocked by the server
         time.sleep(1)
 
+    print(f"Number of entries collected: {len(data)}")
+
     df = pd.DataFrame(data, columns=['Title', 'Description', 'URL'])
-    df.to_csv('country.new.csv', index=False, encoding='utf-8')
+    df.to_csv(location+'.csv', index=False, encoding='utf-8')
     print("CSV 文件已成功生成。")
 
 if __name__ == "__main__":
@@ -128,3 +138,4 @@ if __name__ == "__main__":
     parser.add_argument("location", help="要爬取的 URL")
     args = parser.parse_args()
     main(args.location)
+
