@@ -19,7 +19,7 @@ def main(location):
     driver = webdriver.Chrome(service=service)
 
     # 第一层：获取所有 chart 和 collections 的 URL
-    url = location
+    url = "https://www.macromicro.me/macro/" + location
     driver.get(url)
 
     # 等待页面加载并获取链接
@@ -115,6 +115,7 @@ def main(location):
                 print(f"Failed to fetch data from {url}")
         except Exception as e:
             print(f"Error retrieving URL {url}: {e}")
+
         # Add a slight delay to avoid being blocked by the server
         time.sleep(1)
 
