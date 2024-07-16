@@ -118,7 +118,8 @@ def main(location):
                 description_tag = soup.find('meta', property="og:description")
                 title = title_tag.get('content') if title_tag else "Title not found"
                 description = description_tag.get('content') if description_tag else "Meta description not found"
-                data.append([title, description, url])
+                if title != "Title not found":  # 过滤掉标题为 "Title not found" 的记录
+                    data.append([title, description, url])
             else:
                 print(f"Failed to fetch data from {url}")
         except Exception as e:
@@ -138,4 +139,5 @@ if __name__ == "__main__":
     parser.add_argument("location", help="要爬取的 URL")
     args = parser.parse_args()
     main(args.location)
+
 
